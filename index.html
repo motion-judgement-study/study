@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Human Motion Study</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="pilotbar" hidden>PILOT <span class="small">(test run: answers are marked as pilot and never count)</span>
+  <button id="dbgToggle" class="tiny">debug panel</button></div>
+<div class="wrap">
+  <div id="err"></div>
+
+  <section id="s-loading" class="on"><p class="muted">Loading&hellip;</p></section>
+
+  <section id="s-block">
+    <h1 id="blockTitle">This study is not available</h1>
+    <div class="card"><p id="blockText"></p></div>
+  </section>
+
+  <section id="s-welcome">
+    <h1>Human motion study</h1>
+    <div class="card intro">
+      <ul>
+        <li>You will compare pairs of short 3D animations of a person, shown side by side: <b>Left</b> and <b>Right</b>.</li>
+        <li>Each pair comes with what the person was asked to do.</li>
+        <li><b>Part 1</b>: pick the one that looks more like a <b>real person naturally doing this</b>.</li>
+        <li><b>Part 2</b>: a timeline marks when each action is asked for. Pick the one that does each action <b>at the marked time</b>.</li>
+        <li>The answer buttons unlock after the clips have played once. Click the bar under the clips to jump.</li>
+        <li>About <b id="minutes">25</b> minutes. Two questions tell you which answer to pick; please read each question.</li>
+      </ul>
+      <p id="narrowWarn" class="warn" hidden>Your window looks narrow. Please use a computer and make this window wider.</p>
+      <p class="muted small">Taking part is voluntary and you may stop at any time by closing this page. We record your choices, response times, playback
+        actions, your screen size and browser, and the identifiers passed by the recruitment platform; no other personal information is collected.
+        The answers are used only for research on computer-generated human motion. <span id="contact"></span></p>
+      <label class="row"><input type="checkbox" id="consent"/> <span>I am 18 or older, I have read the above, and I agree to take part.</span></label>
+      <div class="row"><button id="goStart" class="primary" disabled>Continue</button></div>
+    </div>
+  </section>
+
+  <section id="s-resume">
+    <h1>Welcome back</h1>
+    <div class="card"><p>Your answers so far are kept in this browser. You can continue where you left off.</p>
+      <div class="row"><button id="goResume" class="primary">Continue</button><button id="goNewPilot" hidden>Start a new pilot session</button></div></div>
+  </section>
+
+  <section id="s-intro1">
+    <h1>Part 1 of 2 &middot; Natural movement</h1>
+    <div class="card intro p1">
+      <ul>
+        <li>Pick the motion that looks more like a <b>real person naturally doing</b> what is described: smooth, balanced, physically plausible,
+          and doing the described actions.</li>
+        <li>Exact timing comes in Part 2.</li>
+      </ul>
+      <div class="row"><button id="goPart1" class="primary">Start Part 1</button></div>
+    </div>
+  </section>
+
+  <section id="s-intro2">
+    <h1>Part 2 of 2 &middot; Timing, not naturalness</h1>
+    <div class="card intro p2">
+      <ul>
+        <li>Now a <b>timeline</b> is added. Coloured bars mark <b>when</b> each action is asked for; the white line follows playback.
+          During a bar, the requested body part turns the bar's colour.</li>
+        <li>Pick the motion that does each action <b>inside its bar</b>, with the right body part, and <b>nothing extra outside the bars</b>.
+          Ignore smoothness here.</li>
+        <li>Some requests start with a movement such as <i>walks backward</i>. That part has no bar.</li>
+      </ul>
+      <div class="example">
+        <svg id="example" viewBox="0 0 640 112" role="img" aria-label="example"><g id="exg"></g></svg>
+        <p class="small">Example: both jump inside the jump bar, but Right also punches outside the punch bar, so <b>Left</b> is better.</p>
+      </div>
+      <p class="must">Judge timing only, not how natural the motion looks.</p>
+      <div class="row"><button id="goPart2" class="primary">Start Part 2</button></div>
+    </div>
+  </section>
+
+  <section id="s-trial">
+    <div id="banner"></div>
+    <div class="pbar"><div class="pseg" id="seg1"><div class="fill"></div><div class="plab">PART 1</div></div>
+      <div class="pseg" id="seg2"><div class="fill"></div><div class="plab">PART 2</div></div></div>
+    <div id="goal" hidden><span class="glab" id="goallab">Requested</span><span id="goaltext"></span></div>
+    <div id="qtext"></div>
+    <div id="stage"><video id="vid" muted playsinline loop preload="auto"></video>
+      <div class="side l">Left</div><div class="side r">Right</div></div>
+    <div id="ctrl"><button id="play" title="Space">&#10074;&#10074;</button>
+      <div id="vbar" title="click to jump"><div id="vfill"></div></div></div>
+    <div id="tl" hidden><div id="tlrows"></div><div id="tlcur"></div></div>
+    <div class="ans"><button id="bA" disabled>Left</button><button id="bB" disabled>Right</button></div>
+    <div id="lockmsg"></div>
+    <div class="pilotonly" hidden><span id="pilotTag"></span> <button id="skipBtn" class="tiny">skip (pilot)</button></div>
+  </section>
+
+  <section id="s-end">
+    <h1>Almost done</h1>
+    <div class="card"><p>Any comments about the study? (optional)</p><textarea id="comment" maxlength="2000"></textarea>
+      <div class="row"><button id="submit" class="primary">Submit</button></div></div>
+  </section>
+
+  <section id="s-save">
+    <h1>Saving your answers</h1>
+    <div class="card"><p id="saveMsg">Please keep this page open.</p>
+      <div class="row" id="saveFail" hidden><button id="saveRetry" class="primary">Try again</button>
+        <a id="saveDl" href="#">Download my answers</a></div>
+      <p id="saveHelp" class="muted small" hidden>If saving keeps failing, please download your answers and send us a message through the recruitment
+        platform; we will check your submission by hand.</p></div>
+  </section>
+
+  <section id="s-done">
+    <h1>Thank you</h1>
+    <div class="card" id="donebox"></div>
+  </section>
+</div>
+
+<div id="dbg" hidden>
+  <div class="dbghead"><b>debug (pilot)</b><button id="dbgClose" class="tiny">close</button></div>
+  <pre id="dbgText"></pre>
+  <div id="dbgKey">
+    <button id="dbgUnblind" class="tiny">unblind</button>
+    <span id="dbgPw" hidden><input id="dbgPass" type="password" placeholder="passphrase" size="22"/> <button id="dbgPwGo" class="tiny">decrypt</button></span>
+    <span id="dbgKeyMsg" class="small"></span>
+  </div>
+  <div class="row small"><button id="dbgSkip" class="tiny">skip question</button><button id="dbgUnlock" class="tiny">unlock now</button>
+    <button id="dbgDl" class="tiny">download data</button></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "minutes": 25,
+  "datapipe_experiment_id": "REPLACE_WITH_DATAPIPE_EXPERIMENT_ID",
+  "datapipe_experiment_id_pilot": "",
+  "use_condition_assignment": true,
+  "completion_code": "REPLACE_WITH_PROLIFIC_COMPLETION_CODE",
+  "completion_url_base": "https://app.prolific.com/submissions/complete?cc=",
+  "redirect_seconds": 5,
+  "incremental_every": 8,
+  "contact_note": "If you have a question or a problem, please send us a message through Prolific.",
+  "datapipe_url": "https://pipe.jspsych.org/api/data/",
+  "datapipe_condition_url": "https://pipe.jspsych.org/api/condition/"
+}

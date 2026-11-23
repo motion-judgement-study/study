@@ -1,0 +1,14 @@
+{
+ "build": "a720a25cb077",
+ "time": "2026-11-23 15:29:45 +0900",
+ "stimuli_md5": "871852655c924d58d2ebb19337326ff3",
+ "bo3_overlay_md5": "66b8210be1a88b99d07aaf65a1ade8b7",
+ "rule_md5": "e7a33890a023fda25d5217ba5f75061d",
+ "n_plans": 30,
+ "n_videos": 128,
+ "n_requests": 17,
+ "n_study_requests": 15,
+ "n_pairs": 30,
+ "screens_per_plan": 62,
+ "crf": 23
+}
