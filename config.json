@@ -1,9 +1,9 @@
 {
   "minutes": 25,
-  "datapipe_experiment_id": "REPLACE_WITH_DATAPIPE_EXPERIMENT_ID",
+  "datapipe_experiment_id": "c1cK3O8O5FQi",
   "datapipe_experiment_id_pilot": "",
   "use_condition_assignment": true,
-  "completion_code": "REPLACE_WITH_PROLIFIC_COMPLETION_CODE",
+  "completion_code": "C1OCDJPV",
   "completion_url_base": "https://app.prolific.com/submissions/complete?cc=",
   "redirect_seconds": 5,
   "incremental_every": 8,
