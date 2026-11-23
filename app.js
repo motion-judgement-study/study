@@ -77,9 +77,11 @@ async function dpSave(filename, dataStr, tries, onTry) {
   }
   return last;
 }
+// -> {c, why}: c is the counter value, or null with DataPipe's reason (e.g. CONDITION_ASSIGNMENT_NOT_ACTIVE), kept in the start event
 async function dpCondition() {
   const r = await postJson(CFG.datapipe_condition_url, { experimentID: CFG.datapipe_experiment_id }, 8000);
-  return (r.status === 200 && r.body && Number.isInteger(r.body.condition)) ? r.body.condition : null;
+  if (r.status === 200 && r.body && Number.isInteger(r.body.condition)) return { c: r.body.condition, why: null };
+  return { c: null, why: (r.body && r.body.error) || r.error || `HTTP ${r.status}` };
 }
 
 // ------------------------------------------------------------------------------------------------ session state (kept in this browser)
@@ -88,7 +90,9 @@ function nAnswered() { return Object.keys(S.st.answers).length; }
 function filePrefix() { return PILOT ? "pilot" : "main"; }
 function snapshot(kind) {
   const st = S.st;
-  return { format: "motion-study-v3", kind, saved_at: nowIso(), build: PLANS.build,
+  // trial_type: DataPipe's default submission check ("Check submissions before storing them", required field trial_type) looks for this
+  // top-level key; without it every save was refused with INVALID_DATA (Prolific preview 261123).
+  return { trial_type: "motion-study-v3", format: "motion-study-v3", kind, saved_at: nowIso(), build: PLANS.build,
     session: { sid: st.sid, mode: MODE, pid: st.pid, study_id: st.study_id, session_id: st.session_id, plan: st.plan, group: st.group, plan_src: st.plan_src,
       started_at: st.started_at, finished_at: st.finished_at || null, ua: navigator.userAgent.slice(0, 300), screen: st.screen, tz_offset_min: new Date().getTimezoneOffset(),
       n_trials: S.plan.trials.length, n_answers: nAnswered() },
@@ -279,11 +283,13 @@ async function assignPlan() {
     if (Number.isInteger(q) && q >= 0 && q < n) return { plan: q, src: "url" };
     return { plan: Math.floor(Math.random() * n), src: "random" };
   }
+  let why = "not configured";
   if (CFG.use_condition_assignment && validId(CFG.datapipe_experiment_id)) {
-    const c = await dpCondition();
-    if (c != null && c >= 0) return { plan: c % n, src: "condition" };
+    const r = await dpCondition();
+    if (r.c != null && r.c >= 0) return { plan: r.c % n, src: "condition" };
+    why = r.why;
   }
-  return { plan: hashStr(PID) % n, src: "hash" };
+  return { plan: hashStr(PID) % n, src: "hash", why };
 }
 async function beginSession() {
   $("goStart").disabled = true;
@@ -295,7 +301,7 @@ async function beginSession() {
         plan: a.plan, plan_src: a.src, group: PLANS.plans[a.plan].g, started_at: nowIso(), finished_at: null, answers: {}, intro: {}, comment: "", events: [],
         inc_saved: [], final_saved: false, final_status: "", screen: `${screen.width}x${screen.height}@${window.devicePixelRatio || 1} win ${innerWidth}x${innerHeight}`,
         build: PLANS.build };
-      event("start", { plan: a.plan, src: a.src });
+      event("start", { plan: a.plan, src: a.src, ...(a.why ? { cond_why: a.why } : {}) });
       save();
     }
     S.plan = PLANS.plans[S.st.plan];
